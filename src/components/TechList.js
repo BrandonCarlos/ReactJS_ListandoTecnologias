@@ -1,6 +1,9 @@
 //Vamos criar uma lista de tecnológias que conhecemos até agora
 //temos várias formas de escrever um "componente" agora usaremos CLASS
 import React, { Component } from 'react';//Vamos importar do REACT também um carinha chamado "COMPONENT"
+//Aki teremos que IMPORTAR o TechItem
+import TechItem from './techItem';
+
 
 class TechList extends Component {//Class TechList herdando funcionalidades do Component
   //Na Classe podemos armazenar esse ESTADO
@@ -38,6 +41,9 @@ class TechList extends Component {//Class TechList herdando funcionalidades do C
   //ai vai, precisarei utilizar o THIS porque eu preciso armazenar o valor que está contido em
   //e.target.value, dentro de newTech que eu tenho aki no STATE da minha classe, do meu COMPONENTE
   handleInputChange = e => {
+    //Se o COMPONENTE "techItem" precisasse acessar alguma propriedade dentro de um COMPONENTE de CLASSE
+    //Para acessar as propriedades fariamos -> this.props.tech
+    //As propriedades no formato de classe ficam armazenadas dentro de "this.props"
     //console.log(e.target.value);//Pra eu pegar o valor do INPUT, temos que armazenar este valor dentro
     //do STATE
     //1° parâmetro quero alterar o valor de "newTech", pra e.target.value
@@ -78,6 +84,21 @@ class TechList extends Component {//Class TechList herdando funcionalidades do C
     this.setState({ newGame: g.target.value });
   }
 
+  //Criaremos uma função para o botão
+  //O que seria legal receber de parâmetro dentro dela, por enquanto as nossas tecnologias não tem ID
+  //Elas tem apenas o nome, então vou receber exatamente o "tech" então vou procurar dentro do ARRAY
+  //qual que é igual a esse nome(tech) e vou remover ele da lista
+  handleDelete = (tech) => {//tech = NODE, REACT, REACT NATIVE
+    //Pra gerar um novo STATE, nesse FILTER eu recebo cada uma dessas tecnologias 
+    //chamo a tecnologia de "t"
+    //t = node SE node for diferente de node = FALSE, então não retorna node
+    //t = node SE node for diferente de REACT = TRUE, então retorna o REACT
+    //t = node SE node for diferente de REACT NATIVE = TRUE, então retorna o REACT NATIVE
+    this.setState({ techs: this.state.techs.filter(t => t != tech) })//t = NODE, REACT, REACT NATIVE
+    //Vai retornar todas as tecnologias menos a tecnologia(tech)
+    //Ou seja quando clicamos em REMOVER(NODE) nos retorna todas as tecnologias menos o NODE
+  }
+
   //iremos retornar o HTML 
   //Todo "Component" escrito em formato de Classe, precisa obrigatóriamente ter um método chamado
   //"render()"
@@ -102,12 +123,44 @@ class TechList extends Component {//Class TechList herdando funcionalidades do C
       //Testando que está fazendo a atualização colocando o <h1></h1>
       //Ao invez do FRAGMENTE vamos por <form></form> que terá um método chamado "onSubmit"
       //que vai chamar o nosso "this.handleSubmit"
+      //Vamos fazer a funcionalidade de remover tecnologia, e iremos ter várias linhas de código
+      //então usamos os PARÊNTESES ()
+      //Usaremos um botão para "remover" um item
+      //Dentro do "button" teremos uma AÇÃO quando o usuário clicar no botão, por isso vou chamar o
+      //onClick do REACT
+      //Pra eu fazer a função de remover item funcionar temos que por assim:
+      // () => this.handleDelete(tech) <- irá funcionar porque eu estou criando uma nova FUNÇÃO
+      //E não to executando ela, só quando eu clicar irá executar 
+      //No lugar onde tinha o <li></li> eu coloco o <TechItem />
+      //Fizemos um "map" e ao invez de retornar um elemento HTML, agente retorna diretamente um
+      //"Componente" a "key" também precisa ficar deste lado, não pode ficar dentro do COMPONENTE(TechItem)
+      //a "key" precisa ficar deste lado na "LISTAGEM"
+      //Vou ter que passar a informação de "TECH" como uma propriedade pra esse <TechItem key={tech} />
+      //Conceito de propriedade: propriedade é tudo que agente passa pro COMPONENTE aki dentro da TAG
+      //Passando a propriedade tech que é igual a tech = <TechItem key={tech} tech={tech} />
+      //Eu também preciso passar a FUNCTION "handleDelete" como uma PROPRIEDADE do nosso <TechItem />
+      //Para que ele conheça essa FUNCTION
+      //Vamos passar uma outra PROPRIEDADE chamada "onDelete={this.handleDelete}"
+      //Ficaria assim: <TechItem key={tech} tech={tech} onDelete={this.handleDelete} />
+      //Estou passando uma PROPRIEDADE pro meu COMPONENTE que é uma FUNCTION
+      //A gente passou pro nosso COMPONENTE pro "TechItem" aqui 
+      //No REACT podemos passar qualquer coisa como PROPRIEDADE, pode ser uma FUNÇÃO, pode ser um
+      //OBJETO, pode ser outra CLASSE, pode ser outro ELEMENTO, pode ser até um COMPONENTE
+      //COMPONENTE icon={} por exemplo e dentro um JSX
+
 
       <form onSubmit={this.handleSubmit}>
         <h1>{this.state.newTech}</h1> Aki é para mostrar a nova Tecnologia digitada no INPUT
         <h2>{this.state.newGame}</h2> Aki é para mostrar o novo game digitado no INPUT
         <ul>
-          {this.state.techs.map(tech => <li key={tech}>{tech}</li>)}
+          {this.state.techs.map(tech => (
+            <TechItem
+              key={tech}
+              tech={tech}
+              //icon={<Icon />}
+              onDelete={() => this.handleDelete(tech)}
+            />
+          ))}
         </ul>
         Input das tecnologias: <input
           type="text"
